@@ -30,4 +30,13 @@ class MyConstant {
   static Color primary = Color(0xffab47bc);
   static Color dart = Color(0xff790e8b);
   static Color ligth = Color(0xffdf78ef);
+
+
+  // ButtonStyle
+  ButtonStyle myButtonStyle()=> ElevatedButton.styleFrom(
+              primary: MyConstant.dart,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+            );
 }

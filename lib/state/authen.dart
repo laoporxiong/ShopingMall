@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:shopingmall/utility/my_constant.dart';
 import 'package:shopingmall/widget/show_image.dart';
@@ -11,23 +13,60 @@ class Authen extends StatefulWidget {
 }
 
 class _AuthenState extends State<Authen> {
-
-bool statusRedEye = true;
+  bool statusRedEye = true;
 
   @override
   Widget build(BuildContext context) {
     double size = MediaQuery.of(context).size.width;
     return Scaffold(
       body: SafeArea(
-        child: ListView(
-          children: [
-            buidImage(size),
-            buildAppName(),
-            buildUser(size),
-            buildPassword(size)
-          ],
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
+          behavior: HitTestBehavior.opaque,
+          child: ListView(
+            children: [
+              buidImage(size),
+              buildAppName(),
+              buildUser(size),
+              buildPassword(size),
+              buildLogin(size),
+              buildCreateAccount(),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Row buildCreateAccount() {
+    return Row(mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ShowTitle(
+                  title: 'Non Account?',
+                  textStyle: MyConstant().h2Style(),
+                ),
+                TextButton(
+                  onPressed: ()=>Navigator.pushNamed(context, MyConstant.rounteCreateAccount),
+                  child: Text('Create Account',style: TextStyle(fontStyle: FontStyle.italic),),
+                ),
+              ],
+            );
+  }
+
+  Row buildLogin(double size) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          margin: EdgeInsets.symmetric(vertical: 16),
+          width: size * 0.6,
+          child: ElevatedButton(
+            style: MyConstant().myButtonStyle(),
+            onPressed: () {},
+            child: Text("Login"),
+          ),
+        ),
+      ],
     );
   }
 
@@ -68,12 +107,29 @@ bool statusRedEye = true;
         Container(
           margin: EdgeInsets.only(top: 16),
           width: size * 0.6,
-          child: TextFormField( obscureText: statusRedEye,
-            decoration: InputDecoration( 
+          child: TextFormField(
+            obscureText: statusRedEye,
+            decoration: InputDecoration(
+              suffixIcon: IconButton(
+                onPressed: () {
+                  setState(() {
+                    statusRedEye = !statusRedEye;
+                  });
+                },
+                icon: statusRedEye
+                    ? Icon(
+                        Icons.remove_red_eye,
+                        color: MyConstant.ligth,
+                      )
+                    : Icon(
+                        Icons.remove_red_eye_outlined,
+                        color: MyConstant.ligth,
+                      ),
+              ),
               labelStyle: MyConstant().h2Style(),
               labelText: 'Password :',
               prefixIcon: Icon(
-                Icons.lock_clock_outlined,
+                Icons.lock_outlined,
                 color: MyConstant.ligth,
               ),
               enabledBorder: OutlineInputBorder(
