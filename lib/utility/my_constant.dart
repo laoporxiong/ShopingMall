@@ -24,7 +24,7 @@ class MyConstant {
       TextStyle h2Style() =>
       TextStyle(fontSize: 18, color: dart, fontWeight: FontWeight.w700);
       TextStyle h3Style() =>
-      TextStyle(fontSize: 12, color: dart, fontWeight: FontWeight.normal);
+      TextStyle(fontSize: 14, color: dart, fontWeight: FontWeight.normal);
 
   //Color
   static Color primary = Color(0xffab47bc);
