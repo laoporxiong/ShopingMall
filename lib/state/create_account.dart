@@ -1,5 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shopingmall/utility/my_constant.dart';
+import 'package:shopingmall/utility/my_dialog.dart';
+import 'package:shopingmall/widget/show_image.dart';
 import 'package:shopingmall/widget/show_title.dart';
 
 class CreateAccount extends StatefulWidget {
@@ -11,6 +17,44 @@ class CreateAccount extends StatefulWidget {
 
 class _CreateAccountState extends State<CreateAccount> {
   String? typeUser;
+  File? file;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    checePerission();
+  }
+
+  Future<Null> checePerission() async {
+    bool locationService;
+    LocationPermission locationPermission;
+
+    locationService = await Geolocator.isLocationServiceEnabled();
+    if (locationService) {
+      print('Service Location Open');
+
+      locationPermission = await Geolocator.checkPermission();
+      if (locationPermission == LocationPermission.denied) {
+        locationPermission = await Geolocator.requestPermission();
+        if (locationPermission == LocationPermission.deniedForever) {
+          MyDialog().alertLocationService(context,'Not Allow To Share Location','Please Share Location');
+        } else {
+          // Find LatLng
+        }
+      } else {
+        if (locationPermission == LocationPermission.deniedForever) {
+          MyDialog().alertLocationService(context,'Not Allow To Share Location','Please Share Location');
+        } else {
+          // Find LatLng
+
+        }
+      }
+    } else {
+      print('Service Location Close');
+      MyDialog().alertLocationService(context,'Location Service is"Close"','Please Open Your Location Service First');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,18 +86,63 @@ class _CreateAccountState extends State<CreateAccount> {
             buildPassword(size),
             buildTitle('Photo'),
             buildSubTitle(),
+            buildAvatar(size),
           ],
         ),
       ),
     );
   }
 
+  Future<Null> choosesImage(ImageSource source) async {
+    try {
+      var result = await ImagePicker().getImage(
+        source: source,
+        maxWidth: 800,
+        maxHeight: 800,
+      );
+      setState(() {
+        file = File(result!.path);
+      });
+    } catch (e) {}
+  }
+
+  Row buildAvatar(double size) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        IconButton(
+          onPressed: () => choosesImage(ImageSource.camera),
+          icon: Icon(
+            Icons.add_a_photo_outlined,
+            size: 36.0,
+            color: MyConstant.dart,
+          ),
+        ),
+        Container(
+            margin: EdgeInsets.symmetric(vertical: 16),
+            width: size * 0.6,
+            child: file == null
+                ? ShowImage(pathImage: MyConstant.image5)
+                : Image.file(file!)),
+        IconButton(
+          onPressed: () => choosesImage(ImageSource.gallery),
+          icon: Icon(
+            Icons.add_photo_alternate_outlined,
+            size: 36.0,
+            color: MyConstant.dart,
+          ),
+        ),
+      ],
+    );
+  }
+
   ShowTitle buildSubTitle() {
     return ShowTitle(
-            title:
-                'ເປັນຮູບພາບຄວາມເປັນຕົວຕົນຂອງຜູ້ໃຊ້ (ແຕ່ຖ້າບໍ່ສະດວກເຮົາຈະສະແດງເປັນຄ່າເລີ່ມຕົ້ນແທນ)',
-            textStyle: MyConstant().h3Style(),
-          );
+      title:
+          'ເປັນຮູບພາບຄວາມເປັນຕົວຕົນຂອງຜູ້ໃຊ້ (ແຕ່ຖ້າບໍ່ສະດວກເຮົາຈະສະແດງເປັນຄ່າເລີ່ມຕົ້ນແທນ)',
+      textStyle: MyConstant().h3Style(),
+    );
   }
 
   Row buildName(double size) {
