@@ -21,13 +21,14 @@ class _CreateAccountState extends State<CreateAccount> {
   String? typeUser;
   File? file;
   double? lat, lng;
+  final formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     checePerission();
-   // findLatLng();
+    // findLatLng();
   }
 
   Future<Null> checePerission() async {
@@ -91,6 +92,9 @@ class _CreateAccountState extends State<CreateAccount> {
     double size = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          buildCreateMyAccount(),
+        ],
         title: Text(
           'Create New Account',
         ),
@@ -100,35 +104,57 @@ class _CreateAccountState extends State<CreateAccount> {
         onTap: () => FocusScope.of(context).requestFocus(
           FocusNode(),
         ),
-        child: ListView(
-          padding: EdgeInsets.all(16),
-          children: [
-            buildTitle('ຂໍ້ມູນທົ່ວໄປ:'),
-            buildName(size),
-            buildTitle('Type of User:'),
-            buildRadioBuyer(size),
-            buildRadioSeller(size),
-            buildRadioRider(size),
-            buildTitle('ຂໍ້ມູນພື້ນຖານ:'),
-            buildAddress(size),
-            buildPhone(size),
-            buildUser(size),
-            buildPassword(size),
-            buildTitle('Photo'),
-            buildSubTitle(),
-            buildAvatar(size),
-            buildTitle('Show Location On Your Device'),
-            buildMap(),
-          ],
+        child: Form(
+          key: formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                buildTitle('ຂໍ້ມູນທົ່ວໄປ:'),
+                buildName(size),
+                buildTitle('Type of User:'),
+                buildRadioBuyer(size),
+                buildRadioSeller(size),
+                buildRadioRider(size),
+                buildTitle('ຂໍ້ມູນພື້ນຖານ:'),
+                buildAddress(size),
+                buildPhone(size),
+                buildUser(size),
+                buildPassword(size),
+                buildTitle('Photo'),
+                buildSubTitle(),
+                buildAvatar(size),
+                buildTitle('Show Location On Your Device'),
+                buildMap(),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 
+  IconButton buildCreateMyAccount() {
+    return IconButton(
+      onPressed: () {
+        if (formKey.currentState!.validate()) {
+          if (typeUser == null) {
+            print('Non Choose type User');
+            MyDialog().normalDialog(context, "Not Choose the Tpye of User yet",
+                'You have to choose 1 of 3 tpye of user before');
+          } else {
+            print('Process Insert to Database');
+          }
+        }
+      },
+      icon: Icon(Icons.cloud_upload_outlined),
+    );
+  }
+
   Set<Marker> setMarker() => <Marker>[
         Marker(
-          markerId: MarkerId('id'),position: LatLng(lat!,lng!),
-          infoWindow: InfoWindow(title: 'you are here',snippet: 'lat=$lat,'),
+          markerId: MarkerId('id'),
+          position: LatLng(lat!, lng!),
+          infoWindow: InfoWindow(title: 'you are here', snippet: 'lat=$lat,'),
         ),
       ].toSet();
 
@@ -143,7 +169,8 @@ class _CreateAccountState extends State<CreateAccount> {
                   target: LatLng(lat!, lng!),
                   zoom: 16,
                 ),
-                onMapCreated: (controller) {},markers: setMarker(),
+                onMapCreated: (controller) {},
+                markers: setMarker(),
               ),
       );
 
@@ -207,6 +234,11 @@ class _CreateAccountState extends State<CreateAccount> {
           margin: EdgeInsets.only(top: 16),
           width: size * 0.6,
           child: TextFormField(
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Please Fill Your Name First';
+              } else {}
+            },
             decoration: InputDecoration(
               labelStyle: MyConstant().h2Style(),
               labelText: 'Name :',
@@ -237,6 +269,11 @@ class _CreateAccountState extends State<CreateAccount> {
           margin: EdgeInsets.only(top: 16),
           width: size * 0.6,
           child: TextFormField(
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Please Fill Your Addres First';
+              } else {}
+            },
             maxLines: 4,
             decoration: InputDecoration(
               hintText: 'Address:',
@@ -271,6 +308,12 @@ class _CreateAccountState extends State<CreateAccount> {
           margin: EdgeInsets.only(top: 16),
           width: size * 0.6,
           child: TextFormField(
+            keyboardType: TextInputType.phone,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Please Fill Your Phone Number First';
+              } else {}
+            },
             decoration: InputDecoration(
               labelStyle: MyConstant().h2Style(),
               labelText: 'Phone Number :',
@@ -301,6 +344,11 @@ class _CreateAccountState extends State<CreateAccount> {
           margin: EdgeInsets.only(top: 16),
           width: size * 0.6,
           child: TextFormField(
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Please Fill Your Username First';
+              } else {}
+            },
             decoration: InputDecoration(
               labelStyle: MyConstant().h2Style(),
               labelText: 'User :',
@@ -331,6 +379,11 @@ class _CreateAccountState extends State<CreateAccount> {
           margin: EdgeInsets.only(top: 16),
           width: size * 0.6,
           child: TextFormField(
+            validator: (value) {
+              if (value!.isEmpty) {
+                return 'Please Fill Your Password First';
+              } else {}
+            },
             decoration: InputDecoration(
               labelStyle: MyConstant().h2Style(),
               labelText: 'Password :',

@@ -1,5 +1,3 @@
-
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -9,7 +7,8 @@ import 'package:shopingmall/widget/show_image.dart';
 import 'package:shopingmall/widget/show_title.dart';
 
 class MyDialog {
-  Future<Null> alertLocationService(BuildContext context,String title, String message) async {
+  Future<Null> alertLocationService(
+      BuildContext context, String title, String message) async {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -26,12 +25,40 @@ class MyDialog {
         ),
         actions: [
           TextButton(
-            onPressed: () async{
-             // Navigator.pop(context);
+            onPressed: () async {
+              // Navigator.pop(context);
               await Geolocator.openLocationSettings();
               exit(0);
             },
             child: Text('Ok'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<Null> normalDialog(
+      BuildContext context, String title, String message) async {
+    showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: ListTile(
+          leading: ShowImage(
+            pathImage: MyConstant.image1,
+          ),
+          title: ShowTitle(
+            title: title,
+            textStyle: MyConstant().h2Style(),
+          ),
+          subtitle: ShowTitle(
+            title: message,
+            textStyle: MyConstant().h3Style(),
+          ),
+        ),
+        children: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('OK'),
           ),
         ],
       ),
