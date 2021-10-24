@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shopingmall/utility/my_constant.dart';
 import 'package:shopingmall/utility/my_dialog.dart';
 import 'package:shopingmall/widget/show_image.dart';
+import 'package:shopingmall/widget/show_progress.dart';
 import 'package:shopingmall/widget/show_title.dart';
 
 class CreateAccount extends StatefulWidget {
@@ -18,12 +20,14 @@ class CreateAccount extends StatefulWidget {
 class _CreateAccountState extends State<CreateAccount> {
   String? typeUser;
   File? file;
+  double? lat, lng;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     checePerission();
+   // findLatLng();
   }
 
   Future<Null> checePerission() async {
@@ -38,21 +42,47 @@ class _CreateAccountState extends State<CreateAccount> {
       if (locationPermission == LocationPermission.denied) {
         locationPermission = await Geolocator.requestPermission();
         if (locationPermission == LocationPermission.deniedForever) {
-          MyDialog().alertLocationService(context,'Not Allow To Share Location','Please Share Location');
+          MyDialog().alertLocationService(
+              context, 'Not Allow To Share Location', 'Please Share Location');
         } else {
           // Find LatLng
+          findLatLng();
         }
       } else {
         if (locationPermission == LocationPermission.deniedForever) {
-          MyDialog().alertLocationService(context,'Not Allow To Share Location','Please Share Location');
+          MyDialog().alertLocationService(
+              context, 'Not Allow To Share Location', 'Please Share Location');
         } else {
           // Find LatLng
-
+          findLatLng();
         }
       }
     } else {
       print('Service Location Close');
-      MyDialog().alertLocationService(context,'Location Service is"Close"','Please Open Your Location Service First');
+      MyDialog().alertLocationService(context, 'Location Service is"Close"',
+          'Please Open Your Location Service First');
+    }
+  }
+
+  Future<Null> findLatLng() async {
+    print('findLatLng => work righ now');
+
+    Position? position = await findPosition();
+
+    setState(() {
+      lat = position!.latitude;
+      lng = position.longitude;
+      print('lat= $lat, lng = $lng');
+    });
+  }
+
+  Future<Position?> findPosition() async {
+    Position position;
+    try {
+      position = await Geolocator.getCurrentPosition();
+      return position;
+    } catch (e) {
+      return null;
     }
   }
 
@@ -87,11 +117,35 @@ class _CreateAccountState extends State<CreateAccount> {
             buildTitle('Photo'),
             buildSubTitle(),
             buildAvatar(size),
+            buildTitle('Show Location On Your Device'),
+            buildMap(),
           ],
         ),
       ),
     );
   }
+
+  Set<Marker> setMarker() => <Marker>[
+        Marker(
+          markerId: MarkerId('id'),position: LatLng(lat!,lng!),
+          infoWindow: InfoWindow(title: 'you are here',snippet: 'lat=$lat,'),
+        ),
+      ].toSet();
+
+  Widget buildMap() => Container(
+        color: Colors.grey,
+        width: double.infinity,
+        height: 300,
+        child: lat == null
+            ? ShowProgress()
+            : GoogleMap(
+                initialCameraPosition: CameraPosition(
+                  target: LatLng(lat!, lng!),
+                  zoom: 16,
+                ),
+                onMapCreated: (controller) {},markers: setMarker(),
+              ),
+      );
 
   Future<Null> choosesImage(ImageSource source) async {
     try {
