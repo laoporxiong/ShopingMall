@@ -19,9 +19,8 @@ if (isset($_GET)) {
 	if ($_GET['isAdd'] == 'true') {
 				
 		$name = $_GET['name'];
-		$tpye = $_GET['type'];
+		$type = $_GET['type'];
 		$address = $_GET['address'];
-		$user = $_GET['user'];
 		$phone = $_GET['phone'];
 		$user = $_GET['user'];
 		$password = $_GET['password'];

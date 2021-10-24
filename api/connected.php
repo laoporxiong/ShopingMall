@@ -3,4 +3,4 @@
     error_reporting(0);
     error_reporting(E_ERROR | E_PARSE);
     header("content-type:text/javascript;charset=utf-8");
-    $link = mysqli_connect('localhost', 'laoporxiong', 'las59145639tk', "shoppingmall");
+    $link = mysqli_connect('localhost', 'lalpx', 'Abc1234', "shoppingmall");
